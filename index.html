@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>生徒対話アプリ</title>
+<style>
+:root{--bg:#f2f4f9;--card:#fff;--tx:#1b2233;--sub:#6a7388;--ac:#3b6cf6;--acb:#e9efff;--bd:#e1e6f0;--wn:#e5484d;--ok:#1f9d63;--sh:0 1px 2px rgba(20,30,60,.05),0 4px 14px rgba(20,30,60,.06);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body[data-t=t]{--ac:#0f9d8a;--acb:#def4f0}body[data-t=p]{--ac:#8a5cf6;--acb:#efe8ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11141b;--card:#1b202b;--tx:#e8ebf2;--sub:#98a1b5;--ac:#7399ff;--acb:#243050;--bd:#2c3343;--sh:none}:root:not([data-theme="light"]) body[data-t=t]{--ac:#3ccbb5;--acb:#173730}:root:not([data-theme="light"]) body[data-t=p]{--ac:#b095ff;--acb:#2c2450}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;max-width:100%}html{overflow-x:clip}
+body{background:var(--bg);color:var(--tx);font:15px/1.55 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;padding-bottom:60px}
+button{font-family:inherit;cursor:pointer}button:active{opacity:.7}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 14px 0;border-bottom:1px solid var(--bd)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:6}
+.top{display:flex;align-items:center;gap:8px}.ttl{flex:1;min-width:0}.ttl b{display:block;font-size:17px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}h1{font-size:17px;margin:0;flex:1;min-width:0}.ib,.tm{flex:none}
+.who{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:6px}
+.ib{display:flex;flex-direction:column;align-items:center;background:none;border:0;color:var(--tx);font-size:18px;line-height:1.1;padding:2px 6px}.ib span{font-size:10px;color:var(--sub)}
+.tm{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:5px 10px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}.tm.over{color:var(--wn);border-color:var(--wn)}
+#gr{width:auto;max-width:130px;min-height:30px;padding:0 6px;font-size:16px;border-radius:8px}
+.seg{display:flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;margin-top:8px}
+.seg button{flex:1;min-width:0;white-space:nowrap;border:0;background:none;color:var(--sub);border-radius:9px;padding:9px 2px;font-size:13px;font-weight:700}.seg button.on{background:var(--ac);color:#fff}
+.kd{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center;font-size:12px;color:var(--sub)}.kd button{border:1px solid var(--bd);background:var(--card);color:var(--sub);border-radius:14px;padding:3px 12px;font-size:12px;font-weight:700}.kd button.on{border-color:var(--ac);color:var(--ac);background:var(--acb)}
+.steps{display:flex;gap:6px;overflow-x:auto;padding:8px 0;scrollbar-width:none}.steps::-webkit-scrollbar{display:none}
+.steps button{flex:none;border:1px solid var(--bd);background:var(--card);color:var(--sub);border-radius:18px;padding:5px 13px;font-size:13px}.steps button.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}.steps button.dn:not(.on){color:var(--ok);border-color:var(--ok)}.steps button.dn:not(.on)::before{content:"✓ "}
+main{padding:14px;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+h2{font-size:18px;margin:0 0 4px}.hint{color:var(--sub);font-size:12.5px;margin:0 0 10px}
+label.l{display:block;font-weight:700;font-size:13px;margin:16px 0 7px}
+input[type=text],input[type=date],input[type=time],textarea,select{width:100%;min-height:46px;border:1px solid var(--bd);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;background:var(--bg);color:var(--tx)}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--ac);outline-offset:-1px;background:var(--card)}
+textarea{min-height:84px;resize:vertical}input[type=file]{max-width:100%;width:100%;margin:6px 0;font-size:14px}
+.ch{display:flex;flex-wrap:wrap;gap:8px}.ch button{min-height:40px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:20px;padding:7px 15px;font-size:14.5px}.ch button.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.row>*{min-width:0}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;display:block;text-align:left}.card,.tn,.warn{overflow-wrap:anywhere}
+.sj{border-top:1px solid var(--bd);padding:12px 0}.sj:first-of-type{border-top:0;padding-top:4px}.sj b{display:block;margin-bottom:8px}
+.rt{display:flex;gap:6px;margin-bottom:8px}.rt button{flex:1;min-height:44px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:12px;font-size:16px;font-weight:600}.rt button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn{flex:1;min-height:50px;border-radius:14px;padding:12px;font-size:16px;font-weight:700;background:var(--card);color:var(--tx);border:1px solid var(--bd)}.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.sm{border:1.5px dashed var(--ac);background:none;color:var(--ac);border-radius:12px;min-height:46px;width:100%;margin-top:8px;font-weight:700;font-size:14px}
+.st{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--sh);cursor:pointer}.st small{color:var(--sub)}
+.bd{display:flex;gap:5px;flex-wrap:wrap}.bd i{font-style:normal;font-size:11px;border-radius:10px;padding:2px 8px;background:var(--bg);color:var(--sub);border:1px solid var(--bd)}.bd i.ok{background:var(--acb);color:var(--ac);border-color:var(--ac)}
+.warn{background:rgba(229,160,0,.12);border:1px solid #e5a000;border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+.tn{border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px}.tn small{color:var(--sub)}.bg{background:var(--ac);color:#fff;border-radius:10px;padding:1px 9px;font-size:11px;font-weight:700}
+.ov{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 40px}.ov>*{max-width:640px;margin-left:auto;margin-right:auto}
+.ov pre{white-space:pre-wrap;word-break:break-word;font:14px/1.7 inherit;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;z-index:30}
+</style></head><body>
+<header id="hd"></header><main id="m"></main><div id="ov"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>String(s||"").normalize("NFKC").replace(/\s/g,""),fmtD=t=>t?new Date(t).toLocaleString("ja-JP"):"-",today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const load=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const clone=o=>JSON.parse(JSON.stringify(o)),has=o=>Object.values(o||{}).some(v=>Array.isArray(v)?v.length:v);
+let _tt=0;function toast(m){if(Date.now()-_tt<2500)return;_tt=Date.now();const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+const SUBS=["国語","数学","英語","理科","社会"],TB=[...SUBS,"総合"],GR=["","小6","中1","中2","中3","高1","高2","高3","その他"],PS=["未提案","提案済","検討中","受講決定","見送り"];
+const WD=["0分","〜30分","〜1時間","〜2時間","〜3時間","3時間以上"],HD=["0分","〜1時間","〜2時間","〜4時間","〜6時間","6時間以上"];
+const kcList=k=>(k=="夏期"?[0,4,8,12,16,20,24]:[0,3,6,9,12,15,18]).map(n=>n+"コマ");
+const HS=[
+{t:"生活・勉強",ic:"🏠",f:[["wake","起床時間","time"],["bed","就寝時間","time"],["club","部活","c",["運動部","文化部","なし","引退済"]],["lesson","習い事・曜日の予定","text"],["wd","平日の勉強時間","c",WD],["hd","休日の勉強時間","c",HD],["what","勉強内容","m",["学校の宿題","定期テスト対策","受験勉強","先取り","復習","問題集","検定"]],["worry","勉強の悩み","m",["集中が続かない","やり方が分からない","時間がない","やる気が出ない","苦手が多い","スマホの誘惑"]]]},
+{t:"5教科",ic:"📊",k:"sub"},
+{t:"志望・目標",ic:"🎯",f:[["goal_s","志望度","c",["決まっている","迷っている","未定"]],["s1","第1志望","text"],["s2","第2志望","text"],["goal","現在の目標","area"],["tgt","目標点・偏差値","text"]]},
+{t:"テスト",ic:"📈",k:"tests"},
+{t:"講習",ic:"🔥",k:"ks",f:[["kfocus","特に伸ばしたい単元・内容","text"],["kwish","講習でできるようになりたいこと(本人の言葉で)","area"],["koff","講習期間に通えない日・予定","text"],["ktime","通いやすい時間帯","m",["午前","午後","夕方","夜","土日のみ"]],["kcur","受けている塾・通信教育","text"],["memo","講師メモ","area"]]}];
+let ST=load("ti_stu")||[],V={s:null,t:"h",hs:0,ks:0},Q="",R=null,E=null,P=null,sec=0,run=false,tmr=null;
+let KIND=load("ti_kind")||([5,6,7,8,9].includes(new Date().getMonth()+1)?"夏期":"冬期");
+const recs=()=>load("ti_recs")||[],trs=()=>load("ti_tr")||[],pls=()=>load("ti_pl")||[],stu=n=>ST.find(s=>s.n==n),recOf=(n,k)=>recs().filter(r=>r.name==n&&r.kind==k).sort((a,b)=>b._ts-a._ts)[0];
+(function(){let c=0;const add=(n,g,ts)=>{if(n&&!stu(n)){ST.push({n,g:g||"",ts:ts||0});c=1}};recs().forEach(r=>add(r.name,r.grade,r._ts));trs().forEach(e=>add(e.stu,"",e.ts));if(c)put("ti_stu",ST)})();
+/* データ読込 */
+function loadR(){let r=recOf(V.s,KIND);if(r)R=clone(r);else{const o=recs().filter(x=>x.name==V.s).sort((a,b)=>b._ts-a._ts)[0];R=o?clone(o):{};["pri","kfocus","kwish","koff","ktime","memo","tests"].forEach(k=>delete R[k]);R._id="r"+Date.now();R.name=V.s;R.kind=KIND}R.sub=R.sub||{};R.tests=R.tests||[{},{}]}
+function loadE(){E={teacher:load("ti_tname")||"",date:today(),subs:{}};mergeE()}
+function mergeE(){const e=trs().find(x=>x.stu==V.s&&x.teacher==E.teacher.trim()&&x.date==E.date);if(e){E.subs=clone(e.subs);return true}return false}
+function loadP(){P=clone(pls().find(x=>x.stu==V.s&&x.kind==KIND)||{stu:V.s,kind:KIND,rows:{},status:"",memo:""})}
+function saveR(){R._ts=Date.now();R._dev=load("ti_dev")||"";R.grade=(stu(V.s)||{}).g||"";const a=recs(),i=a.findIndex(x=>x._id==R._id);i>=0?a[i]=clone(R):a.unshift(clone(R));put("ti_recs",a)}
+function saveE(){const t=E.teacher.trim();if(!t){toast("先に講師名を入力してください");return}const subs={};for(const n in E.subs)if(has(E.subs[n]))subs[n]=E.subs[n];if(!Object.keys(subs).length)return;
+ const a=trs(),i=a.findIndex(x=>x.stu==V.s&&x.teacher==t&&x.date==E.date),en={id:i>=0?a[i].id:"t"+Date.now(),stu:V.s,teacher:t,date:E.date,subs:clone(subs),kind:KIND,ts:Date.now(),dev:load("ti_dev")||""};i>=0?a[i]=en:a.unshift(en);put("ti_tr",a);put("ti_tname",t)}
+function saveP(){P.ts=Date.now();const a=pls(),i=a.findIndex(x=>x.stu==P.stu&&x.kind==P.kind);i>=0?a[i]=clone(P):a.unshift(clone(P));put("ti_pl",a)}
+const commit=()=>{V.t=="h"?saveR():V.t=="t"?saveE():saveP();mark()};
+function openS(n){V.s=n;V.t="h";V.hs=0;V.ks=0;sec=0;run=false;clearInterval(tmr);loadR();loadE();loadP();render();scrollTo(0,0)}
+function cobj(el){const d=el.dataset;if(d.sn)return R.sub[d.sn]=R.sub[d.sn]||{};const x=V.t;return x=="h"?R:x=="t"?(E.subs[TB[V.ks]]=E.subs[TB[V.ks]]||{}):P}
+/* 部品 */
+function fld(f,o){const[k,l,t,op]=f,v=o[k];let h=`<label class="l">${l}</label>`;
+ if(t=="text"||t=="time")return h+`<input type="${t}" data-k="${k}" value="${esc(v)}">`;
+ if(t=="area")return h+`<textarea data-k="${k}">${esc(v)}</textarea>`;
+ const a=t=="m"?(v||[]):[v];return h+`<div class="ch">`+op.map(x=>`<button data-c="${k}" data-m="${t=="m"?1:""}" data-v="${esc(x)}" class="${a.includes(x)?"on":""}">${esc(x)}</button>`).join("")+`</div>`}
+const rt=(o,sn)=>`<div class="rt">${[1,2,3,4,5].map(i=>`<button data-r="${i}" ${sn?`data-sn="${sn}"`:""} class="${o.r==i?"on":""}">${i}</button>`).join("")}</div>`;
+function doneH(i){const s=HS[i];if(s.k=="sub")return SUBS.some(n=>R.sub[n]&&R.sub[n].r);if(s.k=="tests")return R.tests.some(t=>t.n||t.s);return s.f.some(f=>{const v=R[f[0]];return Array.isArray(v)?v.length:v})||(s.k=="ks"&&R.pri&&R.pri.length)}
+function mark(){document.querySelectorAll(".steps button").forEach((b,i)=>b.classList.toggle("dn",V.t=="h"?!!doneH(i):V.t=="t"?has(E.subs[TB[i]]):false))}
+const kindChips=()=>`<div class="kd">講習:${["夏期","冬期"].map(k=>`<button data-kd="${k}" class="${KIND==k?"on":""}">${k}(${k=="夏期"?4:3}コマ単位)</button>`).join("")}</div>`;
+function hdr(){if(!V.s)return `<div class="top"><h1>📝 生徒対話アプリ</h1><button class="ib" id="datab">💾<span>データ</span></button></div>`+kindChips()+`<div style="height:8px"></div>`;
+ const s=stu(V.s)||{},m=Math.floor(sec/60),ss=String(sec%60).padStart(2,"0"),tabs=[["h","🎤ヒアリング"],["t","👩‍🏫講師記録"],["p","📋講習提案"]],L=V.t=="h"?HS.map(x=>x.t):V.t=="t"?TB:null;
+ return `<div class="top"><button class="ib" id="bk">‹<span>一覧</span></button><div class="ttl"><b>${esc(V.s)}</b><div class="who"><select id="gr">${GR.map(g=>`<option value="${g}" ${g==s.g?"selected":""}>${g||"学年"}</option>`).join("")}</select><span>自動保存</span></div></div><button class="tm ${sec>=300?"over":""}" id="tm">⏱ ${m}:${ss}</button></div>
+ <div class="seg">${tabs.map(([k,l])=>`<button data-tab="${k}" class="${V.t==k?"on":""}">${l}</button>`).join("")}</div>`+kindChips()+(L?`<div class="steps">${L.map((n,i)=>`<button data-stp="${i}" class="${i==(V.t=="h"?V.hs:V.ks)?"on":""}">${n}</button>`).join("")}</div>`:`<div style="height:8px"></div>`)}
+/* 画面 */
+function render(){document.body.dataset.t=V.s?V.t:"h";$("#hd").innerHTML=hdr();$("#m").dataset.ctx=V.t;$("#m").innerHTML=V.s?(V.t=="h"?hView():V.t=="t"?tView():pView()):homeView();if(V.s){mark();const a=$(".steps .on");a&&a.scrollIntoView({inline:"center",block:"nearest"})}else lst()}
+function homeView(){const le=load("ti_lastexp"),d=le?Math.floor((Date.now()-le)/864e5):null;
+ return (ST.length&&(d===null||d>=7)?`<div class="warn">💾 バックアップ: ${d===null?"まだ書き出していません":d+"日前"}。右上の「データ」から書き出しておきましょう。</div>`:"")+`<input type="text" data-q placeholder="🔍 生徒を検索" value="${esc(Q)}"><div id="ls" style="margin-top:12px"></div><button class="sm" id="adds">＋ 生徒を追加</button>`}
+function lst(){const q=norm(Q),a=ST.filter(s=>!q||norm(s.n).includes(q)),R0=recs(),T0=trs(),P0=pls();
+ $("#ls").innerHTML=a.length?a.sort((x,y)=>x.n.localeCompare(y.n,"ja")).map(s=>{const r=R0.find(x=>x.name==s.n&&x.kind==KIND),nt=new Set(T0.filter(e=>e.stu==s.n).map(e=>e.teacher)).size,p=P0.find(x=>x.stu==s.n&&x.kind==KIND),ps=p&&p.status||"未提案";
+  return `<div class="st" data-o="${esc(s.n)}"><div><b>${esc(s.n)}</b> <small>${esc(s.g||"")}</small></div><div class="bd"><i class="${r?"ok":""}">🎤${r?"済":"未"}</i><i class="${nt?"ok":""}">👩‍🏫${nt}名</i><i class="${ps!="未提案"?"ok":""}">📋${ps}</i></div></div>`}).join(""):`<p class="hint">${ST.length?"該当する生徒がいません":"「＋ 生徒を追加」から始めましょう"}</p>`}
+function priHTML(){const p=R.pri||[];return `<label class="l" style="margin-top:0">講習で特に伸ばしたい教科(押した順に最大3つ)</label><div class="ch">`+SUBS.map(n=>{const i=p.indexOf(n);return `<button data-p="${n}" class="${i>=0?"on":""}">${i>=0?(i+1)+"位 ":""}${n}</button>`}).join("")+`</div>`}
+function hView(){const s=HS[V.hs];let h=`<div class="card"><h2>${s.ic} ${s.t}</h2>`;
+ if(s.k=="sub")h+=`<p class="hint">得意度 1=苦手 〜 5=得意</p>`+SUBS.map(n=>{const d=R.sub[n]||{};return `<div class="sj"><b>${n}</b>${rt(d,n)}<input type="text" data-sn="${n}" data-k="m" placeholder="状況・苦手単元・直近の点数" value="${esc(d.m)}"></div>`}).join("");
+ else if(s.k=="tests")h+=`<p class="hint">直近の定期テスト・模試</p>`+R.tests.map((t,i)=>`<div class="sj"><b>${i+1}件目</b><input type="text" data-ti="${i}" data-k="n" placeholder="テスト名" value="${esc(t.n)}"><div class="row" style="margin:8px 0"><input type="text" data-ti="${i}" data-k="s" placeholder="点数・偏差値" value="${esc(t.s)}"><input type="text" data-ti="${i}" data-k="d" placeholder="時期" value="${esc(t.d)}"></div><input type="text" data-ti="${i}" data-k="m" placeholder="振り返り" value="${esc(t.m)}"></div>`).join("")+`<button class="sm" id="addt">＋ 追加</button>`;
+ else{if(s.k=="ks")h+=`<p class="hint">${KIND}講習に向けた本人の希望と予定</p>`+priHTML();h+=s.f.map((f,i)=>fld(f,R)).join("")}
+ h+=`</div><div class="row"><button class="btn" data-hs="-1" ${V.hs?"":"disabled style=opacity:.4"}>‹ 前へ</button><button class="btn p" data-hs="1" ${V.hs==HS.length-1?"disabled style=opacity:.4":""}>次へ ›</button></div>`;
+ return h+(V.hs==HS.length-1?`<button class="sm" id="cph">ヒアリング要約をコピー</button>`:"")}
+function tfmt(d,n){const L=[];d.r&&L.push(`理解度 ${d.r}/5`);d.good&&L.push(`${n=="総合"?"所見":"できていること"}: ${d.good}`);d.issue&&L.push(`課題: ${d.issue}`);d.kp&&L.push(`講習の優先度: ${d.kp}`);d.kc&&L.push(`推奨: ${d.kc}`);d.kt&&L.push(`講習で扱うこと: ${d.kt}`);return L}
+function tView(){const n=TB[V.ks],o=E.subs[n]||{};
+ let h=`<div class="card"><div class="row"><div><label class="l" style="margin-top:0">担当講師名</label><input type="text" data-e="teacher" value="${esc(E.teacher)}" placeholder="例: 山田"></div><div><label class="l" style="margin-top:0">記録日</label><input type="date" data-e="date" value="${esc(E.date)}"></div></div></div><div class="card"><h2>${n}</h2>`;
+ if(n=="総合")h+=fld(["good","全体所見","area"],o)+fld(["kt","講習の提案方針(全体)","area"],o);
+ else h+=`<label class="l" style="margin-top:0">理解度・定着度(1=要サポート 5=十分)</label>${rt(o)}`+fld(["good","できていること","area"],o)+fld(["issue","課題","area"],o)+fld(["kp","講習での優先度","c",["高","中","低","不要"]],o)+fld(["kt","講習で扱うべきこと","area"],o)+fld(["kc",`推奨コマ数(${KIND}は${KIND=="夏期"?4:3}コマ単位)`,"c",kcList(KIND)],o);
+ h+=`</div>`;const t=E.teacher.trim(),ot=trs().filter(e=>e.stu==V.s&&e.subs[n]&&!(e.teacher==t&&e.date==E.date)).sort((a,b)=>a.date<b.date?1:-1);
+ if(ot.length)h+=`<div class="card"><h2>他の講師の記録</h2>`+ot.map(e=>`<div class="tn"><b>${esc(e.teacher)}</b> <small>${e.date}</small><br>${tfmt(e.subs[n],n).map(esc).join("<br>")}</div>`).join("")+`</div>`;
+ return h}
+function pView(){const es=trs().filter(e=>e.stu==V.s),r=recOf(V.s,KIND)||{},pri=r.pri||[],u=KIND=="夏期"?4:3,tot=SUBS.reduce((s,n)=>s+(parseInt(P.rows[n])||0),0);
+ let h=`<div class="card"><h2>${KIND}講習の提案</h2><p class="hint">${u}コマ単位 ・ 提案合計 <b style="color:var(--ac);font-size:16px">${tot}コマ</b></p><div class="ch">${PS.map(x=>`<button data-c="status" data-v="${x}" class="${(P.status||"未提案")==x?"on":""}">${x}</button>`).join("")}</div></div>`;
+ SUBS.forEach(n=>{const i=pri.indexOf(n),x=es.filter(e=>e.subs[n]&&(e.subs[n].kp||e.subs[n].kc||e.subs[n].kt)),g=r.sub&&r.sub[n]&&r.sub[n].r;
+  h+=`<div class="card"><b style="font-size:16px">${n}</b> ${i>=0?`<span class="bg">本人${i+1}位</span>`:""} ${g?`<small style="color:var(--sub)">本人の得意度 ${g}/5</small>`:""}`+x.map(e=>{const d=e.subs[n];return `<div class="tn"><small>${esc(e.teacher)}</small> ${d.kp?"優先度 <b>"+esc(d.kp)+"</b>":""} ${d.kc?"/ 推奨 "+esc(d.kc):""}${d.kt?"<br>"+esc(d.kt):""}</div>`}).join("")+`<label class="l">提案コマ数</label><div class="ch">${kcList(KIND).map(c=>`<button data-pr="${n}" data-v="${c}" class="${P.rows[n]==c?"on":""}">${c}</button>`).join("")}</div></div>`});
+ return h+`<div class="card"><label class="l" style="margin-top:0">面談メモ(保護者の反応・見送り理由・次回連絡日など)</label><textarea data-k="memo">${esc(P.memo)}</textarea></div><button class="btn p" id="cpp" style="width:100%">提案シートをコピー</button>`}
+/* テキスト */
+function showTxt(t,x){$("#ov").innerHTML=`<div class="ov"><h2>${t}</h2><pre id="sx">${esc(x)}</pre><div class="row" style="margin-top:12px"><button class="btn" id="cl">閉じる</button><button class="btn p" id="cp">コピー</button></div></div>`;
+ $("#cl").onclick=()=>$("#ov").innerHTML="";$("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(x);toast("コピーしました")}catch(e){const r=document.createRange();r.selectNodeContents($("#sx"));getSelection().removeAllRanges();getSelection().addRange(r);toast("選択しました。コピーしてください")}}}
+function hText(){const L=[`【${KIND}面談 ヒアリング】`,`${V.s} ${(stu(V.s)||{}).g||""}`,""];
+ HS.forEach(s=>{const o=[];if(s.k=="sub")SUBS.forEach(n=>{const d=R.sub[n];d&&(d.r||d.m)&&o.push(`・${n}: ${d.r?"得意度"+d.r+"/5 ":""}${d.m||""}`)});
+  else if(s.k=="tests")R.tests.forEach(t=>{(t.n||t.s)&&o.push(`・${t.n||""}(${t.d||"-"}) ${t.s||""} ${t.m||""}`)});
+  else{s.k=="ks"&&R.pri&&R.pri.length&&o.push("・伸ばしたい教科: "+R.pri.map((n,i)=>(i+1)+"位 "+n).join("、"));s.f.forEach(f=>{let v=R[f[0]];Array.isArray(v)&&(v=v.join("、"));v&&o.push(`・${f[1]}: ${v}`)})}
+  o.length&&L.push(`■${s.t}`,...o,"")});return L.join("\n")}
+function pText(){const es=trs().filter(e=>e.stu==V.s),r=recOf(V.s,KIND)||{},pri=r.pri||[],L=[`【${V.s} ${KIND}講習 ご提案】`,`提案状況: ${P.status||"未提案"}`,""];let t=0;
+ SUBS.forEach(n=>{const c=P.rows[n];if(!c)return;t+=parseInt(c)||0;const x=es.filter(e=>e.subs[n]&&e.subs[n].kt).map(e=>e.subs[n].kt);L.push(`■${n}: ${c}${pri.includes(n)?`(本人希望${pri.indexOf(n)+1}位)`:""}`,...x.map(s=>"　"+s))});
+ L.push("",`合計: ${t}コマ`);P.memo&&L.push("",`メモ: ${P.memo}`);return L.join("\n")}
+/* イベント */
+document.addEventListener("click",e=>{const b=e.target.closest("button,.st");if(!b)return;const d=b.dataset;
+ if(d.o)return openS(d.o);
+ if(b.id=="bk"){V.s=null;return render()}
+ if(b.id=="datab")return dataUI();
+ if(b.id=="adds"){const n=(prompt("生徒名を入力してください")||"").trim();if(n){if(!stu(n)){ST.unshift({n,g:"",ts:Date.now()});put("ti_stu",ST)}openS(n)}return}
+ if(d.kd){KIND=d.kd;put("ti_kind",KIND);if(V.s){loadR();loadP()}return render()}
+ if(d.tab){V.t=d.tab;render();return scrollTo(0,0)}
+ if(d.stp!=null){V.t=="h"?V.hs=+d.stp:V.ks=+d.stp;render();return scrollTo(0,0)}
+ if(d.hs){V.hs=Math.max(0,Math.min(HS.length-1,V.hs+ +d.hs));render();return scrollTo(0,0)}
+ if(b.id=="tm"){run=!run;clearInterval(tmr);if(run)tmr=setInterval(()=>{sec++;const t=$("#tm");if(t){t.textContent=`⏱ ${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`;t.classList.toggle("over",sec>=300)}},1e3);return}
+ if(b.id=="addt"){R.tests.push({});saveR();return render()}
+ if(b.id=="cph")return showTxt("ヒアリング要約",hText());
+ if(b.id=="cpp")return showTxt("講習提案シート",pText());
+ if(d.p){const p=R.pri=R.pri||[],i=p.indexOf(d.p);if(i>=0)p.splice(i,1);else if(p.length<3)p.push(d.p);else return toast("3つまで選べます");
+  b.parentNode.querySelectorAll("button").forEach(x=>{const j=p.indexOf(x.dataset.p);x.classList.toggle("on",j>=0);x.textContent=(j>=0?(j+1)+"位 ":"")+x.dataset.p});return commit()}
+ if(d.pr){P.rows[d.pr]=P.rows[d.pr]==d.v?"":d.v;saveP();return render()}
+ if(d.c||d.r){const o=cobj(b),k=d.c||"r";
+  if(d.r)o.r=o.r==+d.r?0:+d.r;else if(d.m){const a=o[k]||[];o[k]=a.includes(d.v)?a.filter(x=>x!=d.v):[...a,d.v]}else o[k]=o[k]==d.v?"":d.v;
+  b.parentNode.querySelectorAll("button").forEach(x=>x.classList.toggle("on",d.r?o.r==+x.dataset.r:Array.isArray(o[k])?o[k].includes(x.dataset.v):o[k]==x.dataset.v));commit()}});
+document.addEventListener("input",e=>{const t=e.target,d=t.dataset;
+ if(d.q!=null){Q=t.value;return lst()}
+ if(d.e){E[d.e]=t.value;if(d.e=="teacher")put("ti_tname",t.value.trim());return}
+ if(d.k){(d.ti!=null?R.tests[+d.ti]:cobj(t))[d.k]=t.value;commit()}});
+document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
+ if(t.id=="gr"){const s=stu(V.s);if(s){s.g=t.value;s.ts=Date.now();put("ti_stu",ST);if(recOf(V.s,KIND))saveR()}return}
+ if(d.e){const f=mergeE();if(!f&&d.e=="date")E.subs={};if(f||d.e=="date")render()}});
+/* データ書き出し・統合 */
+const K=[["recs","ti_recs",x=>x._id,x=>x._ts],["tr","ti_tr",x=>norm(x.stu)+"|"+norm(x.teacher)+"|"+x.date,x=>x.ts],["pl","ti_pl",x=>norm(x.stu)+"|"+x.kind,x=>x.ts],["st","ti_stu",x=>norm(x.n),x=>x.ts]];
+const bundle=()=>({app:"ti",v:2,dev:load("ti_dev")||"",at:Date.now(),recs:recs(),tr:trs(),pl:pls(),st:ST});
+function mplan(bs){const out={},st={n:0,u:0};K.forEach(([f,key,kf,tf])=>{const m=new Map((load(key)||[]).map(x=>[kf(x),x]));bs.forEach(b=>(b[f]||[]).forEach(x=>{const k=kf(x),o=m.get(k);if(!o){m.set(k,x);st.n++}else if((tf(x)||0)>(tf(o)||0)){m.set(k,x);st.u++}}));out[key]=[...m.values()]});return{out,st}}
+function parseB(t,src){let b;try{b=JSON.parse(t)}catch(e){throw src+": 読み取れませんでした"}if(!b||b.app!="ti")throw src+": このアプリのデータではありません";return b}
+async function expFile(){const b=bundle(),name=`生徒対話_${(b.dev||"端末").replace(/[\\\/:*?"<>|\s]/g,"")}_${today().replace(/-/g,"")}.json`,data=JSON.stringify(b);let dl=null;try{dl=window.claude&&await claude.use("downloads")}catch(e){}
+ const ok=()=>{put("ti_lastexp",Date.now());toast("書き出しました");dataUI()};
+ if(dl){try{await dl.save({filename:name,data});ok()}catch(e){if(!e||e.code!="declined")toast("ファイル保存できません。テキスト表示をお使いください")}return}
+ try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();a.remove();ok()}catch(e){toast("保存できません。テキスト表示をお使いください")}}
+function dataUI(){const bk=load("ti_bak"),le=load("ti_lastexp");
+ $("#ov").innerHTML=`<div class="ov"><h2>データの書き出し・統合</h2><p class="hint">この端末: 生徒${ST.length}名 / ヒアリング${recs().length}件 / 講師記録${trs().length}件 / 提案${pls().length}件<br>最終書き出し: ${le?fmtD(le):"まだありません"}</p>
+ <div class="card"><label class="l" style="margin-top:0">この端末の名前</label><input type="text" id="devn" value="${esc(load("ti_dev")||"")}" placeholder="例: 教室A / 山田先生のスマホ"></div>
+ <div class="card"><h2>① 書き出し(各端末で)</h2><div class="row"><button class="btn p" id="exf">ファイルで保存</button><button class="btn" id="ext">テキスト表示</button></div></div>
+ <div class="card"><h2>② 取り込み・統合(まとめ役の端末で)</h2><p class="hint">同じ記録は更新日時が新しい方を採用します。</p><input type="file" id="imf" accept=".json,application/json" multiple><label class="l">またはテキストを貼り付け</label><textarea id="imt"></textarea><button class="btn" id="imb" style="width:100%;margin-top:8px">内容を確認</button><div id="imr" style="margin-top:10px"></div></div>
+ ${bk?`<button class="btn" id="undo" style="width:100%;margin-bottom:8px">↩ 直前の統合を取り消す(${fmtD(bk.at)}の状態へ)</button>`:""}<button class="btn" id="cl" style="width:100%">閉じる</button></div>`;
+ $("#cl").onclick=()=>{$("#ov").innerHTML="";render()};$("#devn").oninput=e=>put("ti_dev",e.target.value.trim());$("#exf").onclick=expFile;
+ $("#ext").onclick=()=>{put("ti_lastexp",Date.now());showTxt("書き出しテキスト(コピーして保存)",JSON.stringify(bundle()))};
+ if(bk)$("#undo").onclick=()=>{if(confirm("統合前の状態に戻します。よろしいですか?")){K.forEach(([f,key])=>put(key,bk[key]||[]));ST=load("ti_stu")||[];toast("元に戻しました");dataUI()}};
+ $("#imb").onclick=async()=>{const bs=[],er=[];for(const f of $("#imf").files){try{bs.push(parseB(await f.text(),f.name))}catch(x){er.push(String(x))}}
+  const tx=$("#imt").value.trim();if(tx){try{bs.push(parseB(tx,"貼り付けテキスト"))}catch(x){er.push(String(x))}}
+  const o=$("#imr");if(!bs.length&&!er.length){o.innerHTML=`<p class="hint">ファイルを選ぶか、テキストを貼り付けてください</p>`;return}
+  const p=mplan(bs);o.innerHTML=er.map(x=>`<p style="color:var(--wn)">${esc(x)}</p>`).join("")+bs.map(b=>`<div class="tn"><b>${esc(b.dev||"端末名なし")}</b> <small>${fmtD(b.at)} 書き出し</small><br>生徒${(b.st||[]).length}名・ヒアリング${(b.recs||[]).length}件・講師記録${(b.tr||[]).length}件・提案${(b.pl||[]).length}件</div>`).join("")
+   +(bs.length?`<div class="tn" style="background:var(--acb)"><b>統合結果</b>: 新規${p.st.n}件・更新${p.st.u}件</div><button class="btn p" id="imok" style="width:100%;margin-top:8px">統合して反映する</button>`:"");
+  if(bs.length)$("#imok").onclick=()=>{const bak={at:Date.now()};K.forEach(([f,key])=>bak[key]=load(key)||[]);put("ti_bak",bak);K.forEach(([f,key])=>put(key,p.out[key]));ST=load("ti_stu")||[];toast("統合しました");dataUI()}}}
+render();
+</script></body></html>
